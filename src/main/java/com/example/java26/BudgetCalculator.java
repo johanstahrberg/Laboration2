@@ -21,4 +21,18 @@ public class BudgetCalculator {
     }
 
 
+    public double calculateCategoryTotal(List<Transaction> transactions, String category) {
+        double total = 0;
+
+        for (Transaction transaction : transactions) {
+            if (transaction.category().equals(category)) {
+                total += transaction.amount();
+            }
+
+        }
+
+        return total;
+    }
+
+
 }

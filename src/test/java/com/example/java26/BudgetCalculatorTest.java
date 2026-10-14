@@ -53,4 +53,67 @@ public class BudgetCalculatorTest {
     }
 
 
+    @Test
+    void shouldCalculateCategoryTotal() {
+
+        BudgetCalculator calculator = new BudgetCalculator();
+
+        Transaction food1 = new Transaction(
+                LocalDate.now(),
+                "Mat",
+                250.0,
+                TransactionType.EXPENSE
+        );
+
+        Transaction food2 = new Transaction(
+                LocalDate.now(),
+                "Mat",
+                500.0,
+                TransactionType.EXPENSE
+        );
+
+        Transaction rent = new Transaction(
+                LocalDate.now(),
+                "Hyra",
+                7000.0,
+                TransactionType.EXPENSE
+        );
+
+        Transaction salary = new Transaction(
+                LocalDate.now(),
+                "Lön",
+                20000.0,
+                TransactionType.INCOME
+        );
+
+        List<Transaction> transactions = List.of(food1, food2, salary, rent);
+
+        double result = calculator.calculateCategoryTotal(transactions, "Mat");
+
+        assertEquals(750.0, result);
+
+    }
+
+
+    @Test
+    void shouldReturnZeroWhenCategoryDoesNotExist() {
+
+        BudgetCalculator calculator = new BudgetCalculator();
+
+        Transaction food = new Transaction(
+                LocalDate.now(),
+                "Mat",
+                250.0,
+                TransactionType.EXPENSE
+        );
+
+        List<Transaction> transactions = List.of(food);
+
+        double result = calculator.calculateCategoryTotal(transactions, "Nöje");
+
+        assertEquals(0.0, result);
+
+    }
+
+
 }
