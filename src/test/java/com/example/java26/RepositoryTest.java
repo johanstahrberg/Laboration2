@@ -16,7 +16,6 @@ public class RepositoryTest {
 
         Repository<Transaction> repository = new Repository<>();
 
-
         Transaction transaction = new Transaction(
                 LocalDate.now(),
                 "Mat",
@@ -82,6 +81,15 @@ public class RepositoryTest {
         );
 
         assertEquals(1, result.size());
+
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenRepositoryIsEmpty() {
+
+        Repository<Transaction> repository = new Repository<>();
+
+        assertEquals(0, repository.findAll().size());
 
     }
 
