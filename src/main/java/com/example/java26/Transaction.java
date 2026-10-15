@@ -9,4 +9,10 @@ public record Transaction(
         TransactionType type
 ) {
 
+    public Transaction {
+        if (amount < 0) {
+            throw new InvalidTransactionException("Beloppet får inte vara negativt");
+        }
+
+    }
 }
