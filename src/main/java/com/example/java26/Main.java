@@ -104,6 +104,7 @@ public class Main {
                 }
                 default -> {
                     IO.println("Ogiltigt val.");
+                    LOGGER.warning("Ogiltigt menyval angavs.");
                 }
             }
 
