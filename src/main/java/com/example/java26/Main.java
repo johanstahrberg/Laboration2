@@ -4,8 +4,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Main {
+
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+
     static void main() {
 
         Repository<Transaction> repository = new Repository<>();
@@ -37,15 +41,19 @@ public class Main {
                     }
                     catch (DateTimeParseException e) {
                         IO.println("Ogiltigt datum.");
+                        LOGGER.warning("Ogiltigt datum angavs.");
                     }
                     catch (NumberFormatException e) {
                         IO.println("Ogiltigt belopp.");
+                        LOGGER.warning("Ogiltigt belopp angavs.");
                     }
                     catch (InvalidTransactionException e) {
                         IO.println(e.getMessage());
+                        LOGGER.warning("Ogiltig transaktion: " + e.getMessage());
                     }
                     catch (IllegalArgumentException e) {
                         IO.println("Ogiltig typ. Skriv INCOME eller EXPENSE.");
+                        LOGGER.warning("Ogiltig transaktionstyp angavs.");
                     }
                 }
                 case "2" -> {
@@ -88,6 +96,7 @@ public class Main {
                     }
                     catch (IllegalArgumentException e) {
                         IO.println("Ogiltig typ. Skriv INCOME eller EXPENSE.");
+                        LOGGER.warning("Ogiltig transaktionstyp vid filtrering.");
                     }
                 }
                 case "e" -> {
@@ -101,8 +110,8 @@ public class Main {
         } while (running);
 
 
-
     }
+
 
     static void printMenu() {
         IO.println("Budgethanteraren");
