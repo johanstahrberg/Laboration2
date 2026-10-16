@@ -1,6 +1,8 @@
 package com.example.java26;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.Comparator;
 import java.util.List;
 
 public class Main {
@@ -17,11 +19,13 @@ public class Main {
 
             switch (choice) {
                 case "1" -> {
+                    try {
                     String dateText = IO.readln("Datum (ÅÅÅÅ-MM-DD): ");
+                    LocalDate date = LocalDate.parse(dateText);
                     String category = IO.readln("Kategori: ");
                     String amountText = IO.readln("Belopp: ");
                     double amount = Double.parseDouble(amountText);
-                    LocalDate date = LocalDate.parse(dateText);
+
 
                     String typeText = IO.readln("Typ (INCOME/EXPENSE): ");
                     TransactionType type = TransactionType.valueOf(typeText);
@@ -30,6 +34,19 @@ public class Main {
                     repository.add(transaction);
 
                     IO.println("Transaktionen har lagts till.");
+                    }
+                    catch (DateTimeParseException e) {
+                        IO.println("Ogiltigt datum.");
+                    }
+                    catch (NumberFormatException e) {
+                        IO.println("Ogiltigt belopp.");
+                    }
+                    catch (InvalidTransactionException e) {
+                        IO.println(e.getMessage());
+                    }
+                    catch (IllegalArgumentException e) {
+                        IO.println("Ogiltig typ. Skriv INCOME eller EXPENSE.");
+                    }
                 }
                 case "2" -> {
                     List<Transaction> transactions = repository.findAll();
@@ -51,18 +68,26 @@ public class Main {
                     IO.println("Summa för " + category + ": " + categoryTotal);
                 }
                 case "4" -> {
-                    String typeText = IO.readln("Typ att filtrera på (INCOME/EXPENSE): ");
-                    TransactionType type = TransactionType.valueOf(typeText);
-                    List<Transaction> result = repository.findWhere(
-                            transaction -> transaction.type() == type
-                    );
+                    try {
+                        String typeText = IO.readln("Typ att filtrera på (INCOME/EXPENSE): ");
+                        TransactionType type = TransactionType.valueOf(typeText);
+                        List<Transaction> result = repository.findWhere(
+                                transaction -> transaction.type() == type
+                        );
 
-                    if (result.isEmpty()) {
-                        IO.println("Inga transaktioner hittades.");
+                        result.sort(Comparator.comparing(Transaction::date).reversed());
+
+                        if (result.isEmpty()) {
+                            IO.println("Inga transaktioner hittades.");
+                        }
+
+                        for (Transaction transaction : result) {
+                            IO.println(transaction);
+                        }
+
                     }
-
-                    for (Transaction transaction : result) {
-                        IO.println(transaction);
+                    catch (IllegalArgumentException e) {
+                        IO.println("Ogiltig typ. Skriv INCOME eller EXPENSE.");
                     }
                 }
                 case "e" -> {
