@@ -140,7 +140,7 @@ public class Main {
 
             for (String line : lines) {
                 try {
-                    String[] parts = line.split(",");
+                    String[] parts = line.split(";");
                     LocalDate date = LocalDate.parse(parts[0]);
                     String category = parts[1];
                     double amount = Double.parseDouble(parts[2]);
@@ -166,9 +166,9 @@ public class Main {
         List<String> lines = new ArrayList<>();
 
         for (Transaction transaction : transactions) {
-            String line = transaction.date() + ","
-                    + transaction.category() + ","
-                    + transaction.amount() + ","
+            String line = transaction.date() + ";"
+                    + transaction.category() + ";"
+                    + transaction.amount() + ";"
                     + transaction.type();
 
             lines.add(line);
