@@ -5,15 +5,29 @@ import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
+import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
 
 public class Main {
 
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
+    private static final Path FILE_PATH =
+            Path.of(System.getProperty("user.home"), "java26", "transactions.csv");
+
     static void main() {
 
         Repository<Transaction> repository = new Repository<>();
         BudgetCalculator calculator = new BudgetCalculator();
+        loadTransactions(repository);
+
+        try {
+            Files.createDirectories(FILE_PATH.getParent());
+        } catch (IOException e) {
+            LOGGER.warning("Kunde inte skapa mappen för transaktionsfilen.");
+        }
 
         boolean running = true;
 
@@ -100,6 +114,7 @@ public class Main {
                     }
                 }
                 case "e" -> {
+                    saveTransactions(repository);
                     running = false;
                 }
                 default -> {
@@ -110,6 +125,62 @@ public class Main {
 
         } while (running);
 
+
+    }
+
+
+
+    static void loadTransactions(Repository<Transaction> repository) {
+        if (!Files.exists(FILE_PATH)) {
+            return;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(FILE_PATH);
+
+            for (String line : lines) {
+                try {
+                    String[] parts = line.split(",");
+                    LocalDate date = LocalDate.parse(parts[0]);
+                    String category = parts[1];
+                    double amount = Double.parseDouble(parts[2]);
+                    TransactionType type = TransactionType.valueOf(parts[3]);
+
+                    Transaction transaction = new Transaction(date, category, amount, type);
+                    repository.add(transaction);
+                } catch (RuntimeException e) {
+                    LOGGER.warning("Ogiltig rad i transaktionsfilen: " + line);
+                }
+            }
+
+        }
+        catch (IOException e) {
+            LOGGER.warning("Kunde inte läsa transaktionsfilen.");
+        }
+    }
+
+
+
+    static void saveTransactions(Repository<Transaction> repository) {
+        List<Transaction> transactions = repository.findAll();
+        List<String> lines = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+            String line = transaction.date() + ","
+                    + transaction.category() + ","
+                    + transaction.amount() + ","
+                    + transaction.type();
+
+            lines.add(line);
+        }
+
+        String content = String.join(System.lineSeparator(), lines);
+
+        try {
+            Files.writeString(FILE_PATH, content);
+        } catch (IOException e) {
+            LOGGER.warning("Kunde inte spara transaktionerna.");
+        }
 
     }
 
